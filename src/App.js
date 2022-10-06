@@ -34,7 +34,15 @@ class App extends Component {
     else {
       return(
         <div className="App">
-          Data has been loaded!
+          
+          <ul>
+            {elements.map(element => (
+              <li key={element.id}>
+                {element.front} | {element.back}
+              </li>
+            ))}
+          </ul>
+
         </div>
       );
     }
