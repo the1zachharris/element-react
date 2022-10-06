@@ -1,17 +1,71 @@
-import React from 'react';
+import React, { Component } from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+
+class Elements extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      elements: [],
+      keyword: "",
+      isLoaded: false,
+    }
+  }
+
+  componentDidMount() {
+
+    fetch('http://localhost:49255/api/elements')
+      .then(res => res.json())
+      .then(json => {
+        this.setState({
+          isLoaded: true,
+          elements: json,
+        })
+      })
+
+  }
+
+  updateInputValue(evt) {
+    const val = evt.target.value;
+    // ...       
+    this.setState({
+      keyword: val
+    });
+  }
+
+  render() {
+
+    var { isLoaded, elements, keyword} = this.state;
+
+    if (!isLoaded) {
+      return <div>Loading. . .</div>
+    }
+
+    else {
+
+      const re = new RegExp(keyword, 'i');
+
+      elements = elements.filter(element => {
+        return Object.values(element).some(val => typeof val === "string" && val.match(re));
+      })
+
+      return(
+        <div>
+          <input placeholder="Search" value={keyword} onChange={evt => this.updateInputValue(evt)}></input>
+          <ul>
+            {elements.map(element => (
+              <li key={element.id}>
+                {element.front} | {element.back}
+              </li>
+            ))}
+          </ul>
+
+        </div>
+      );
+    }
+  }
+
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+root.render(<Elements />);
