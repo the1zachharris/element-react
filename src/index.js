@@ -7,6 +7,7 @@ class Elements extends Component {
     super(props);
     this.state = {
       elements: [],
+      element: [],
       keyword: "",
       isLoaded: false,
     }
@@ -22,7 +23,17 @@ class Elements extends Component {
           elements: json,
         })
       })
+  }
 
+  getElementById(id) {
+
+    fetch('http://localhost:49255/api/elements/' + id)
+      .then(res => res.json())
+      .then(json => {
+        this.setState({
+          element: json,
+        })
+      })
   }
 
   updateInputValue(evt) {
@@ -35,7 +46,7 @@ class Elements extends Component {
 
   render() {
 
-    var { isLoaded, elements, keyword} = this.state;
+    var { isLoaded, elements, elementId, keyword} = this.state;
 
     if (!isLoaded) {
       return <div>Loading. . .</div>
@@ -54,17 +65,15 @@ class Elements extends Component {
           <input placeholder="Search" value={keyword} onChange={evt => this.updateInputValue(evt)}></input>
           <ul>
             {elements.map(element => (
-              <li key={element.id}>
-                {element.front} | {element.back}
+              <li key={element.id}> 
+                  {element.front} | {element.back}
               </li>
             ))}
           </ul>
-
         </div>
       );
     }
   }
-
 }
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
